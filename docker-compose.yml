@@ -1,0 +1,63 @@
+version: "3.9"
+
+services:
+
+  # =========================
+  # PostgreSQL
+  # =========================
+  postgres:
+    image: postgres:15
+    container_name: documind-postgres
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: supersecret
+      POSTGRES_DB: app_db
+    volumes:
+      - /mnt/d/DEV_ENV/docker-volumes/postgres:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: always
+
+  # =========================
+  # Ollama
+  # =========================
+  ollama:
+    image: ollama/ollama:latest
+    container_name: documind-ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"  # porta esposta per il servizio
+    command: ["serve", "--host", "0.0.0.0", "--port", "11434", "--model", "llama3.1:8b"]
+    volumes:
+      - ollama-data:/root/.ollama  # per persistente modelli e dati
+
+
+  # =========================
+  # Backend Flask
+  # =========================
+  backend:
+    build: ./backend
+    container_name: documind-backend
+    env_file:
+      - ./backend/.env
+    volumes:
+      - ./backend/upload:/app/upload
+    depends_on:
+      - postgres
+      - ollama
+    ports:
+      - "8000:5001"
+    restart: always
+
+  # =========================
+  # Frontend SvelteKit 5
+  # =========================
+  frontend:
+    build: ./frontend
+    container_name: documind-frontend
+    depends_on:
+      - backend
+    ports:
+      - "5173:5173"
+    command: ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+    restart: always

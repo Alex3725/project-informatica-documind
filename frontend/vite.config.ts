@@ -4,39 +4,39 @@ import { playwright } from '@vitest/browser-playwright';
 import { sveltekit } from '@sveltejs/kit/vite';
 
 export default defineConfig({
-	plugins: [tailwindcss(), sveltekit()],
+  plugins: [tailwindcss(), sveltekit()],
 
-	test: {
-		expect: { requireAssertions: true },
+  server: {
+    host: '0.0.0.0',
+    port: 5173
+  },
 
-		projects: [
-			{
-				extends: './vite.config.ts',
+  test: {
+    expect: { requireAssertions: true },
 
-				test: {
-					name: 'client',
-
-					browser: {
-						enabled: true,
-						provider: playwright(),
-						instances: [{ browser: 'chromium', headless: true }]
-					},
-
-					include: ['src/**/*.svelte.{test,spec}.{js,ts}'],
-					exclude: ['src/lib/server/**']
-				}
-			},
-
-			{
-				extends: './vite.config.ts',
-
-				test: {
-					name: 'server',
-					environment: 'node',
-					include: ['src/**/*.{test,spec}.{js,ts}'],
-					exclude: ['src/**/*.svelte.{test,spec}.{js,ts}']
-				}
-			}
-		]
-	}
+    projects: [
+      {
+        extends: './vite.config.ts',
+        test: {
+          name: 'client',
+          browser: {
+            enabled: true,
+            provider: playwright(),
+            instances: [{ browser: 'chromium', headless: true }]
+          },
+          include: ['src/**/*.svelte.{test,spec}.{js,ts}'],
+          exclude: ['src/lib/server/**']
+        }
+      },
+      {
+        extends: './vite.config.ts',
+        test: {
+          name: 'server',
+          environment: 'node',
+          include: ['src/**/*.{test,spec}.{js,ts}'],
+          exclude: ['src/**/*.svelte.{test,spec}.{js,ts}']
+        }
+      }
+    ]
+  }
 });
