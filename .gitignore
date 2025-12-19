@@ -1,0 +1,22 @@
+# Node / SvelteKit
+node_modules/
+build/
+.vite/
+
+# Environment
+.env
+.env.local
+
+# Docker
+docker/data/
+docker/volumes/
+
+# Python backend
+__pycache__/
+*.pyc
+venv/
+db/data/
+
+# IDE / OS
+.vscode/
+.DS_Store
